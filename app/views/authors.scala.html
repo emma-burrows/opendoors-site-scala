@@ -1,0 +1,67 @@
+@(authors: Seq[Author])
+
+@main("AuthorsController") {
+
+  @if(authors.nonEmpty) {
+    @for( (author, index) <- authors.zipWithIndex) {
+      <article class="col-md-12" id="author@author.ID">
+        <div class="row">
+          <div class="col-md-4 col-sm-3">
+            <h2>@author.name</h2>
+          </div>
+          <div class="col-md-8 col-sm-9 extra-space">
+
+            @if(!author.doNotImport && !author.imported) {
+              <button class="author-import-button" data-author-id="@author.ID" class="btn btn-info">import all</button>
+            }
+
+            <button class="author-not-import-button" data-author-id="@author.ID" class="btn btn-warning">
+            @(if(author.doNotImport) "set all to allow import" else "set all to do NOT import")
+            </button>
+
+            <button class="author-not-import-button" data-author-id="@author.ID" class="btn btn-success">
+          check all imported
+            </button>
+
+            <br />
+            <div style="border: 1px solid blue" class="clear message"></div>
+
+          </div>
+        </div>
+        <hr />
+        @* @if (item.Stories.Count > 0)*@
+        @*{*@
+        @*ViewData["type"] = "Story";*@
+        @*<h3>Stories</h3>*@
+        @*foreach (var story in item.Stories.OrderBy(s => s.Title))*@
+        @*{*@
+        @* @Html.Partial("_Meta", story, ViewData)
+        *@
+        @*}*@
+        @*}*@
+        @* @if (item.Bookmarks.Count > 0)*@
+        @*{*@
+        @*ViewData["type"] = "Bookmark";*@
+        @*<h3>Bookmarks</h3>*@
+        @*foreach (var bookmark in item.Bookmarks.OrderBy(s => s.Title))*@
+        @*{*@
+        @* @Html.Partial("_Meta", bookmark, ViewData)
+        *@
+        @*}*@
+        @*}*@
+        @if(author.stories.getOrElse(List()).isEmpty && author.bookmarks.getOrElse(List()).isEmpty) {
+          <span>No bookmarks or stories.</span>
+        }
+
+      </article>
+    }
+  } else {
+    <div class="bg-warning">
+      <p>No authors found.</p>
+    </div>
+  }
+
+  <script type='text/javascript' src='@routes.Assets.at("js/spin.min.js")'></script>
+  <script type='text/javascript' src='@routes.Assets.at("js/jquery.spin.min.js")'></script>
+  <script type='text/javascript' src='@routes.Assets.at("js/authors.min.js")'></script>
+}
