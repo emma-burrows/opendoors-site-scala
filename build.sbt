@@ -18,6 +18,7 @@ libraryDependencies ++= Seq(
   specs2 % Test,
   // WebJars pull in client-side web libraries
   "org.webjars" %% "webjars-play" % "2.4.0-1",
+  "org.webjars" % "jquery" % "2.1.3",
   "org.webjars" % "bootstrap" % "3.3.6",
 
   "com.typesafe.play" %% "play-slick" % "1.1.1",
