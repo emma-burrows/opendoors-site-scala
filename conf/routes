@@ -2,15 +2,13 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET   /                           controllers.MainController.index()
+GET   /                           controllers.AuthorsController.list
 
 # AuthorsController
 GET   /authors                    controllers.AuthorsController.list
 GET   /authors/importall          controllers.AuthorsController.importAll(authorId: Long ?= 0)
 
-GET   /message                    controllers.MessageController.getMessage(id: Int ?= 42)
+# Javascript router and static resources
 GET   /assets/javascripts         controllers.MainController.javascriptRoutes
-
-# Map static resources from the /public folder to the /assets URL path
 GET   /assets/*file               controllers.Assets.at(path="/public", file)
 GET   /webjars/*file              controllers.WebJarAssets.at(file)
