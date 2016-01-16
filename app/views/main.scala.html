@@ -1,25 +1,58 @@
-@(title: String)(content: Html)
+@(title: String, nav: String)(content: Html)
 
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>@title</title>
     <link rel='shortcut icon' type='image/png' href='@routes.Assets.at("images/favicon.png")'>
     <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))'>
-    <link rel='stylesheet' href='@routes.Assets.at("css/index.css")'>
+    <link rel='stylesheet' href='@routes.Assets.at("css/main.min.css")'>
     <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
     <script type="text/javascript" src="@routes.MainController.javascriptRoutes"></script>
-</head>
-<body>
-    <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container-fluid">
-                <a id="titleLink" class="brand" href="/">@title</a>
-            </div>
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Brand</a>
         </div>
-    </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+<li class="@("active".when(nav == "authors"))">
+<a href="@routes.AuthorsController.list()">Stories by Author (use for importing)</a>
+</li>
+            @*@activeLink(currentPath:String) = @{*@
+              @*if(s"${request.path}".equals(currentPath)) "active"*@
+            @*}*@
+            @*<li class="@activeLink('/')">*@
+              @*<a href="@routes.AuthorsController.list()">Stories by Author (use for importing)</a>*@
+            @*</li>*@
+            @*<li class="@(action == "Index" && controller == "Story" ? "active": "")">*@
+            @*@Html.ActionLink("Stories still to be imported", "Index", "Story")*@
+            @*</li>*@
+            @*<li class="@(action == "Imported" ? "active": "")">*@
+            @*@Html.ActionLink("Imported stories", "Imported", "Story")*@
+            @*</li>*@
+            @*<li class="@(action == "DoNotImport" ? "active": "")">*@
+            @*@Html.ActionLink("Stories marked do not import", "DoNotImport", "Story")*@
+            @*</li>*@
+          </ul>
+        </div>
+          <!-- /.navbar-collapse -->
+      </div>
+        <!-- /.container-fluid -->
+    </nav>
     <div class="container">
-        @content
+    @content
     </div>
-</body>
+  </body>
 </html>

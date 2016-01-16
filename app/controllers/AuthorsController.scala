@@ -1,13 +1,14 @@
 package controllers
 
-import controllers.MessageController._
 import models.Author
 import otw.api.ArchiveClient
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 object AuthorsController extends Controller {
+
+  val config = play.Play.application.configuration
 
   lazy val authors = List.tabulate(5)( x =>
     Author(x, s"author$x", s"author$x@example.com")
@@ -27,10 +28,10 @@ object AuthorsController extends Controller {
       case x if x % 3 == 0 => ""
       case _ => "foo"
     }
-    val thing = works.checkUrlsJson(List(url))
+    val thing = works.findUrls(List(url), true)
 
     thing.map { msg =>
-      Ok(Json.toJson(msg))
+      Ok(Json.toJson(msg.toString))
     }
   }
 }
