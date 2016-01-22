@@ -9,7 +9,8 @@ object MainController extends Controller {
     Action { implicit request =>
       Ok(
         JavaScriptReverseRouter("jsRoutes")(
-          routes.javascript.AuthorsController.importAll
+          routes.javascript.AuthorsController.importAll,
+          routes.javascript.AuthorsController.findAll
         )
       ).as("text/javascript")
     }

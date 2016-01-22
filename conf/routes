@@ -7,6 +7,7 @@ GET   /                           controllers.AuthorsController.list
 # AuthorsController
 GET   /authors                    controllers.AuthorsController.list
 GET   /authors/importall          controllers.AuthorsController.importAll(authorId: Long ?= 0)
+GET   /authors/findall          controllers.AuthorsController.findAll(authorId: Long ?= 0)
 
 # Javascript router and static resources
 GET   /assets/javascripts         controllers.MainController.javascriptRoutes
