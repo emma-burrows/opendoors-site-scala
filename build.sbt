@@ -1,4 +1,8 @@
-val sitename = "opendoors-site"
+import com.typesafe.config._
+
+val conf = ConfigFactory.parseFile(new File("conf/server.conf")).resolve()
+
+val sitename = conf.getString("application.name")
 
 import sbt.Keys._
 
@@ -29,3 +33,8 @@ libraryDependencies ++= Seq(
 
 
 fork in run := true
+
+// do not include docs in distribution file
+sources in (Compile,doc) := Seq.empty
+publishArtifact in (Compile, packageDoc) := false
+

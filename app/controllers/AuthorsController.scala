@@ -21,7 +21,6 @@ object AuthorsController extends Controller with ThingGenerator {
 
   def findAll(authorId: Long) = {
     Action.async {
-      Thread.sleep((new util.Random).nextInt(2000))
       val works = ArchiveClient(config.getString("archive.token"), config.getString("archive.host"))
       val author = generatedAuthors.find(a => a.ID == authorId).head
       val storyUrls = author.stories.getOrElse(List()).map(_.url.getOrElse(""))

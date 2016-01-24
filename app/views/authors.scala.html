@@ -9,7 +9,7 @@
           <div class="col-md-4 col-sm-3">
             <h2>@author.name</h2>
           </div>
-          <div class="col-md-8 col-sm-9 extra-space">
+          <div class="col-md-8 col-sm-9 links">
 
             @if(!author.doNotImport && !author.imported) {
               <button class="btn btn-info author-import-button" data-author-id="@author.ID">import all</button>
@@ -19,7 +19,7 @@
           @(if(author.doNotImport) "set all to allow import" else "set all to do NOT import")
           </button>
 
-          <button class="btn btn-success author-not-import-button" data-author-id="@author.ID">
+          <button class="btn btn-success author-check-button" data-author-id="@author.ID">
               check all imported
           </button>
 
@@ -32,23 +32,22 @@
         @if(author.stories.isDefined) {
           @author.stories.map { stories =>
             <h3>Stories</h3>
-            stories.sort(_.title).map {
-            @* Html.Partial("_Meta", story, ViewData) *@
+            @stories.sortBy(_.title).map { story =>
+                @fragments.meta(story)
             }
           }
         }
 
         @if(author.bookmarks.isDefined) {
           @author.bookmarks.map { bookmarks =>
-            @*ViewData["type"] = "Story";*@
             <h3>Bookmarks</h3>
-            bookmarks.sort(_.title).map {
-            @* Html.Partial("_Meta", story, ViewData) *@
+            @bookmarks.sortBy(_.title).map { bookmark =>
+              @fragments.meta(bookmark)
             }
           }
         }
 
-        @if(author.stories.flatMap(s => author.bookmarks.map(b => s.size + b.size)).getOrElse(0) == 0) {
+        @if(author.stories.isEmpty && author.bookmarks.isEmpty) {
           <span>No bookmarks or stories.</span>
         }
 

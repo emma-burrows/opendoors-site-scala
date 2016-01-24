@@ -1,0 +1,79 @@
+@import com.typesafe.config._
+@import java.io.File
+
+@(work: models.Work)
+
+@isAuthorView = @{ true }
+
+@workType = @{ work.getClass.getName.split('.')(1) }
+@cssClass = @{
+  val c = if(work.imported) "imported " else ""
+  if(work.doNotImport) {c + " donotimport " + workType } else {c + workType }
+}
+@appName = @{
+  val conf = ConfigFactory.parseFile(new File("conf/server.conf")).resolve()
+  conf.getString("application.name")
+}
+
+<div class="row workdiv @cssClass" id="@work.ID">
+  <div class="col-lg-6 col-md-7 col-sm-6 storytitle">
+    @if(workType == "Story" && (work.url.isEmpty && work.asInstanceOf[Story].chapters.map(_.size).getOrElse(0) > 0)) {
+      <h3>@work.title</h3>
+    } else {
+      @if(workType == "Story" && work.url.isDefined && !work.url.get.matches("^https?://.*")) {
+        <h3><a href="@{s"/works/$appName/" + work.url.getOrElse("") }">@work.title</a></h3>
+      } else {
+        <h3><a href="@work.url.getOrElse("")">@work.title</a></h3>
+      }
+    }
+
+    @if(isAuthorView != true) {
+      <span>by <b>@work.author.map(_.name)</b></span>
+    } <br />
+
+    <span class="summary"><b>[@work.rating] @work.warnings.getOrElse("")
+      @work.relationships.map { r =>
+        <span>- @r</span>
+      }
+      <br />
+      @work.tags</b></span> <br />
+
+    <span class="summary">@Html(work.summary.getOrElse(""))</span> <br />
+
+    @if(workType == "Story") {
+      @work.asInstanceOf[Story].chapters.map { chapters =>
+      @for( chapter <- chapters) {
+        <ol>
+          @if(chapter.url == "") {
+            <li><a href="">@chapter.title</a></li>
+          } else {
+            <li>chapter.title</li>
+          }
+        }
+    </ol>
+      }
+    </div>
+
+  <div class="col-lg-6 col-md-5 col-sm-6 links">
+    @if(work.imported) {
+      @work.ao3Url.map { ao3url =>
+        <a href="@ao3url" target="_blank">@ao3url</a>
+      }
+    } else {
+      @if(!work.doNotImport) {
+        <button class="btn btn-info import-work">import</button>
+      }
+    }
+    <button class="btn btn-success mark-imported-work">
+    @(if(work.imported) "mark NOT imported" else "mark as imported")
+    </button>
+
+    <button class="btn btn-warning do-not-import-work">
+    @(if(work.doNotImport) "allow to be imported" else "do NOT allow to be imported")
+    </button>
+
+    <div class="message-info"></div>
+
+  </div>
+  }
+</div>

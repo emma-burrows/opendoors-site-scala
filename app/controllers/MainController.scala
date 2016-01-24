@@ -10,7 +10,8 @@ object MainController extends Controller {
       Ok(
         JavaScriptReverseRouter("jsRoutes")(
           routes.javascript.AuthorsController.importAll,
-          routes.javascript.AuthorsController.findAll
+          routes.javascript.AuthorsController.findAll,
+          routes.javascript.Assets.at
         )
       ).as("text/javascript")
     }
