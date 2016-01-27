@@ -1,6 +1,9 @@
 <configuration>
+
+    <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
+
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/ticket-overlords.log</file>
+        <file>${application.home}/logs/application.log</file>
         <encoder>
             <pattern>
                 %date %level [%thread] %logger{10} [%file:%line] %msg %n
@@ -18,11 +21,19 @@
 
     </appender>
 
+    <appender name="ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE" />
+    </appender>
+
+    <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+    </appender>
+
     <logger name="play" level="INFO" />
     <logger name="application" level="DEBUG" />
 
     <root level="WARN">
-        <appender-ref ref="FILE" />
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNCFILE" />
+        <appender-ref ref="ASYNCSTDOUT" />
     </root>
 </configuration>
