@@ -1,7 +1,4 @@
-@import com.typesafe.config._
-@import java.io.File
-
-@(work: models.Work)
+@(work: models.Work, appName: String)
 
 @isAuthorView = @{ true }
 
@@ -9,10 +6,6 @@
 @cssClass = @{
   val c = if(work.imported) "imported " else ""
   if(work.doNotImport) {c + " donotimport " + workType } else {c + workType }
-}
-@appName = @{
-  val conf = ConfigFactory.parseFile(new File("conf/server.conf")).resolve()
-  conf.getString("application.name")
 }
 
 <div class="row workdiv @cssClass" id="@work.ID">

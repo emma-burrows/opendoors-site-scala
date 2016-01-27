@@ -1,4 +1,4 @@
-@(authors: Seq[Author])
+@(authors: Seq[Author], appName: String)
 
 @main("AuthorsController", "authors") {
 
@@ -33,7 +33,7 @@
           @author.stories.map { stories =>
             <h3>Stories</h3>
             @stories.sortBy(_.title).map { story =>
-                @fragments.meta(story)
+                @fragments.meta(story, appName)
             }
           }
         }
@@ -42,7 +42,7 @@
           @author.bookmarks.map { bookmarks =>
             <h3>Bookmarks</h3>
             @bookmarks.sortBy(_.title).map { bookmark =>
-              @fragments.meta(bookmark)
+              @fragments.meta(bookmark, appName)
             }
           }
         }

@@ -15,7 +15,7 @@ object AuthorsController extends Controller with ThingGenerator {
 
   def list = {
     Action { request =>
-      Ok(views.html.authors(generatedAuthors))
+      Ok(views.html.authors(generatedAuthors, config.getString("application.name")))
     }
   }
 
