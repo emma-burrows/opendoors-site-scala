@@ -13,17 +13,17 @@ trait ThingGenerator {
                   "http://vmguest/WolfAndHound/Chapter/Details/861", "http://astele.co.uk/henneth/Chapter/Details/6318")
 
   lazy val generatedAuthors: List[Author] = List.tabulate(5) { x =>
-    Author(x, s"author$x", s"author$x@example.com").copy( stories = Some(stories(x)))
+    Author(x, s"author$x", s"author$x@example.com") // .copy( stories = Some(stories(x)))
   }
 
 
   def stories(id: Int) = List.tabulate((new Random).nextInt(10)) { x =>
-    Story(Some(x),
+    Story(x,
           s"Story $x",
           Some("a story about a thing"),
           authorID = id,
           rating = Random.shuffle(ratings).head,
-          date = DateTime.now(),
+          date = new java.sql.Date(DateTime.now().getMillis),
           tags = Some("thing"),
           url = Random.shuffle(urls).headOption
     )

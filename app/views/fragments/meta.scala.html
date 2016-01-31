@@ -1,4 +1,4 @@
-@(work: models.Work, appName: String)
+@(author: Author, work: models.Work, appName: String)
 
 @isAuthorView = @{ true }
 
@@ -21,7 +21,7 @@
     }
 
     @if(isAuthorView != true) {
-      <span>by <b>@work.author.map(_.name)</b></span>
+      <span>by <b>@author.name</b></span>
     } <br />
 
     <span class="summary"><b>[@work.rating] @work.warnings.getOrElse("")
@@ -34,17 +34,17 @@
     <span class="summary">@Html(work.summary.getOrElse(""))</span> <br />
 
     @if(workType == "Story") {
-      @work.asInstanceOf[Story].chapters.map { chapters =>
-      @for( chapter <- chapters) {
-        <ol>
-          @if(chapter.url == "") {
-            <li><a href="">@chapter.title</a></li>
-          } else {
-            <li>chapter.title</li>
-          }
-        }
-    </ol>
-      }
+      @*@work.asInstanceOf[Story].chapters.map { chapters =>*@
+      @*@for( chapter <- chapters) {*@
+        @*<ol>*@
+          @*@if(chapter.url == "") {*@
+            @*<li><a href="">@chapter.title</a></li>*@
+          @*} else {*@
+            @*<li>chapter.title</li>*@
+          @*}*@
+        @*}*@
+    @*</ol>
+//      }*@
     </div>
 
   <div class="col-lg-6 col-md-5 col-sm-6 links">

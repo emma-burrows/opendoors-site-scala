@@ -1,25 +1,25 @@
-@(authors: Seq[Author], appName: String)
+@(authors: Seq[AuthorWithWorks], appName: String)
 
 @main("AuthorsController", "authors") {
 
   @if(authors.nonEmpty) {
     @for( (author, index) <- authors.zipWithIndex) {
-      <article class="col-md-12" id="author@author.ID">
+      <article class="col-md-12" id="author@author.author.ID">
         <div class="row">
           <div class="col-md-4 col-sm-3">
-            <h2>@author.name</h2>
+            <h2>@author.author.name</h2>
           </div>
           <div class="col-md-8 col-sm-9 links">
 
-            @if(!author.doNotImport && !author.imported) {
-              <button class="btn btn-info author-import-button" data-author-id="@author.ID">import all</button>
+            @if(!author.author.doNotImport && !author.author.imported) {
+              <button class="btn btn-info author-import-button" data-author-id="@author.author.ID">import all</button>
             }
 
-          <button class="btn btn-warning author-not-import-button" data-author-id="@author.ID">
-          @(if(author.doNotImport) "set all to allow import" else "set all to do NOT import")
+          <button class="btn btn-warning author-not-import-button" data-author-id="@author.author.ID">
+          @(if(author.author.doNotImport) "set all to allow import" else "set all to do NOT import")
           </button>
 
-          <button class="btn btn-success author-check-button" data-author-id="@author.ID">
+          <button class="btn btn-success author-check-button" data-author-id="@author.author.ID">
               check all imported
           </button>
 
@@ -33,7 +33,7 @@
           @author.stories.map { stories =>
             <h3>Stories</h3>
             @stories.sortBy(_.title).map { story =>
-                @fragments.meta(story, appName)
+                @fragments.meta(author.author, story, appName)
             }
           }
         }
@@ -42,7 +42,7 @@
           @author.bookmarks.map { bookmarks =>
             <h3>Bookmarks</h3>
             @bookmarks.sortBy(_.title).map { bookmark =>
-              @fragments.meta(bookmark, appName)
+              @fragments.meta(author.author, bookmark, appName)
             }
           }
         }

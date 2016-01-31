@@ -1,6 +1,6 @@
 package services
 
-import models.Story
+import models.{Author, Story}
 import otw.api.request.Work
 import otw.api.response.{ArchiveApiError, ArchiveResponse}
 import utils.Json
@@ -19,15 +19,15 @@ object Archive {
 
   }
 
-  def storyToArchiveItem(story: Story) = {
+  def storyToArchiveItem(author: Author, story: Story) = {
     Work(
       url = story.url.getOrElse(""),
-      author = story.author.map(_.name).getOrElse(""),
+      author = author.name,
       title = "",
       summary = story.summary.getOrElse(""),
       fandomString = story.fandoms.getOrElse(""),
       ratingString = story.rating,
-      categoryString = story.categories.getOrElse(""),
+      categoryString = "", // story.categories.getOrElse(""),
       relationshipString = story.relationships.getOrElse(""),
       characterString = story.characters.getOrElse("")
     )
