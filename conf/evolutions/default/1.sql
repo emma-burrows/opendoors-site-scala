@@ -21,6 +21,7 @@ CREATE TABLE `stories` (
   `authorid` int(11) NOT NULL DEFAULT '0',
   `rating` varchar(255) NOT NULL DEFAULT '',
   `date` date NOT NULL,
+  `categories` varchar(45) DEFAULT NULL,
   `tags` varchar(1024) DEFAULT NULL,
   `warnings` varchar(255) DEFAULT NULL,
   `fandoms` varchar(255) DEFAULT NULL,
@@ -45,6 +46,7 @@ CREATE TABLE `bookmarks` (
   `authorid` int(11) NOT NULL DEFAULT '0',
   `rating` varchar(255) NOT NULL DEFAULT '',
   `date` date NOT NULL,
+  `categories` varchar(45) DEFAULT NULL,
   `tags` varchar(1024) DEFAULT NULL,
   `warnings` varchar(255) DEFAULT NULL,
   `fandoms` varchar(255) DEFAULT NULL,
@@ -78,8 +80,5 @@ CREATE TABLE `chapters` (
 
 # --- !Downs
 
-DROP TABLE authors;
-DROP TABLE bookmarks;
-DROP TABLE chapters;
-DROP TABLE stories;
+
 

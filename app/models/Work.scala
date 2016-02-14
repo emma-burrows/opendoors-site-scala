@@ -13,7 +13,7 @@ sealed trait Work {
   val rating: String
   val date: Date
   val tags: Option[String] = None
-  // val categories: Option[String] = None
+  val categories: Option[String] = None
   val warnings: Option[String] = None
   val fandoms: Option[String] = None
   val characters: Option[String] = None
@@ -33,7 +33,7 @@ case class Bookmark(
                      override val rating: String,
                      override val date: Date,
                      override val tags: Option[String] = None,
-                     // override val categories: Option[String] = None,
+                     override val categories: Option[String] = None,
                      override val warnings: Option[String] = None,
                      override val fandoms: Option[String] = None,
                      override val characters: Option[String] = None,
@@ -54,7 +54,7 @@ case class Story(
                   override val rating: String,
                   override val date: Date,
                   override val tags: Option[String] = None,
-                  // override val categories: Option[String] = None,
+                  override val categories: Option[String] = None,
                   override val warnings: Option[String] = None,
                   override val fandoms: Option[String] = None,
                   override val characters: Option[String] = None,

@@ -87,7 +87,7 @@ trait Tables {
     * @param donotimport Database column doNotImport SqlType(BIT), Default(false)
     * @param ao3url Database column Ao3Url SqlType(VARCHAR), Length(255,true), Default(None) */
   case class BookmarksRow(id: Long, title: String = "", summary: Option[String] = None, notes: Option[String] = None,
-                          authorid: Long = 0, rating: String = "", date: java.sql.Date, tags: Option[String] = None,
+                          authorid: Long = 0, rating: String = "", date: java.sql.Date, categories: Option[String] = None, tags: Option[String] = None,
                           warnings: Option[String] = Some(""), fandoms: Option[String] = None,
                           characters: Option[String] = None, relationships: Option[String] = None,
                           url: Option[String] = None, imported: Boolean = false, donotimport: Boolean = false,
@@ -99,7 +99,7 @@ trait Tables {
     GR {
       prs => import prs._
         BookmarksRow
-          .tupled((<<[Long], <<[String], <<?[String], <<?[String], <<[Int], <<[String], <<[java.sql.Date], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<[Boolean], <<[Boolean], <<?[String]))
+          .tupled((<<[Long], <<[String], <<?[String], <<?[String], <<[Int], <<[String], <<[java.sql.Date], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<[Boolean], <<[Boolean], <<?[String]))
     }
   }
 
@@ -120,6 +120,8 @@ trait Tables {
     val rating: Rep[String] = column[String]("rating", O.Length(255, varying = true), O.Default(""))
     /** Database column date SqlType(DATE) */
     val date: Rep[java.sql.Date] = column[java.sql.Date]("date")
+    /** Database column categories SqlType(VARCHAR), Length(45,true), Default() */
+    val categories: Rep[Option[String]] = column[Option[String]]("categories", O.Length(45, varying = true))
     /** Database column tags SqlType(VARCHAR), Length(255,true), Default() */
     val tags: Rep[Option[String]] = column[Option[String]]("tags", O.Length(1024, varying = true))
     /** Database column warnings SqlType(VARCHAR), Length(255,true), Default(Some()) */
@@ -147,18 +149,18 @@ trait Tables {
     val index1 = index("authorid", authorid)
 
     def * = {
-      (id, title, summary, notes, authorid, rating, date, tags, warnings, fandoms, characters, relationships, url, imported, donotimport, ao3url) <>(BookmarksRow
+      (id, title, summary, notes, authorid, rating, date, categories, tags, warnings, fandoms, characters, relationships, url, imported, donotimport, ao3url) <>(BookmarksRow
         .tupled, BookmarksRow.unapply)
     }
 
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = {
-      (Rep.Some(id), Rep.Some(title), summary, notes, Rep.Some(authorid), Rep.Some(rating), Rep.Some(date), Rep
+      (Rep.Some(id), Rep.Some(title), summary, notes, Rep.Some(authorid), Rep.Some(rating), Rep.Some(date), Rep.Some(categories), Rep
         .Some(tags), warnings, fandoms, characters, relationships, url, Rep.Some(imported), Rep
         .Some(donotimport), ao3url)
         .shaped.<>({ r => import r._;
         _1.map(_ => BookmarksRow.tupled((_1.get, _2.get, _3, _4, _5.get, _6.get, _7.get, _8
-          .get, _9, _10, _11, _12, _13, _14.get, _15.get, _16)))
+          .get, _9.get, _10, _11, _12, _13, _14, _15.get, _16.get, _17)))
       }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
     }
 
@@ -307,7 +309,7 @@ trait Tables {
     * @param donotimport Database column doNotImport SqlType(BIT), Default(false)
     * @param ao3url Database column Ao3Url SqlType(VARCHAR), Length(255,true), Default(None) */
   case class StoriesRow(id: Long, title: String = "", summary: Option[String] = None, notes: Option[String] = None,
-                        authorid: Long = 0, rating: String = "", date: java.sql.Date, tags: Option[String] = None,
+                        authorid: Long = 0, rating: String = "", date: java.sql.Date, categories: Option[String] = None, tags: Option[String] = None,
                         warnings: Option[String] = Some(""), fandoms: Option[String] = None,
                         characters: Option[String] = None, relationships: Option[String] = None,
                         url: Option[String] = None, imported: Boolean = false, donotimport: Boolean = false,
@@ -319,7 +321,7 @@ trait Tables {
     GR {
       prs => import prs._
         StoriesRow
-          .tupled((<<[Long], <<[String], <<?[String], <<?[String], <<[Long], <<[String], <<[java.sql.Date], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<[Boolean], <<[Boolean], <<?[String]))
+          .tupled((<<[Long], <<[String], <<?[String], <<?[String], <<[Long], <<[String], <<[java.sql.Date], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<[Boolean], <<[Boolean], <<?[String]))
     }
   }
 
@@ -340,6 +342,8 @@ trait Tables {
     val rating: Rep[String] = column[String]("rating", O.Length(255, varying = true), O.Default(""))
     /** Database column date SqlType(DATE) */
     val date: Rep[java.sql.Date] = column[java.sql.Date]("date")
+    /** Database column categories SqlType(VARCHAR), Length(45,true), Default() */
+    val categories: Rep[Option[String]] = column[Option[String]]("categories", O.Length(45, varying = true))
     /** Database column tags SqlType(VARCHAR), Length(255,true), Default() */
     val tags: Rep[Option[String]] = column[Option[String]]("tags", O.Length(1024, varying = true))
     /** Database column warnings SqlType(VARCHAR), Length(255,true), Default(Some()) */
@@ -366,18 +370,17 @@ trait Tables {
     val index1 = index("authorid", authorid)
 
     def * = {
-      (id, title, summary, notes, authorid, rating, date, tags, warnings, fandoms, characters, relationships, url, imported, donotimport, ao3url) <>(StoriesRow
+      (id, title, summary, notes, authorid, rating, date, categories, tags, warnings, fandoms, characters, relationships, url, imported, donotimport, ao3url) <>(StoriesRow
         .tupled, StoriesRow.unapply)
     }
 
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = {
       (Rep.Some(id), Rep.Some(title), summary, notes, Rep.Some(authorid), Rep.Some(rating), Rep.Some(date), Rep
-        .Some(tags), warnings, fandoms, characters, relationships, url, Rep.Some(imported), Rep
-        .Some(donotimport), ao3url)
+        .Some(categories), Rep.Some(tags), warnings, fandoms, characters, relationships, url, Rep.Some(imported), Rep.Some(donotimport), ao3url)
         .shaped.<>({ r => import r._;
         _1.map(_ => StoriesRow.tupled((_1.get, _2.get, _3, _4, _5.get, _6.get, _7.get, _8
-          .get, _9, _10, _11, _12, _13, _14.get, _15.get, _16)))
+          .get, _9.get, _10, _11, _12, _13, _14, _15.get, _16.get, _17)))
       }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
     }
   }
