@@ -11,6 +11,7 @@ object MainController extends Controller {
         JavaScriptReverseRouter("jsRoutes")(
           routes.javascript.AuthorsController.importAll,
           routes.javascript.AuthorsController.findAll,
+          routes.javascript.AuthorsController.doNotImportAll,
           routes.javascript.Assets.at
         )
       ).as("text/javascript")
