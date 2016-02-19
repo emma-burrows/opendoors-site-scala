@@ -27,7 +27,7 @@ object Archive {
       summary = story.summary.getOrElse(""),
       fandomString = story.fandoms.getOrElse(""),
       ratingString = story.rating,
-      categoryString = "", // story.categories.getOrElse(""),
+      categoryString = story.categories.getOrElse(""),
       relationshipString = story.relationships.getOrElse(""),
       characterString = story.characters.getOrElse("")
     )
