@@ -1,18 +1,23 @@
 import com.typesafe.config._
 import com.typesafe.sbt.SbtNativePackager.autoImport._
+import sbt.Keys._
 
 val conf = ConfigFactory.parseFile(new File("conf/server.conf")).resolve()
 
 val sitename = conf.getString("application.name")
 
-import sbt.Keys._
 
 lazy val opendoorsSite = (project in file(".")).enablePlugins(PlayScala)
   .settings(
     name := sitename,
     packageName in Universal := sitename,
+    mappings in Universal += {
+      file("logs") -> "logs"
+    },
     version := "1.0",
     scalaVersion := "2.11.7",
+    maintainer in Linux := "OTW Code <otw-coders@transformativeworks.org>",
+    packageSummary in Linux := s"Open Doors temporary site '$sitename'",
     slick <<= slickCodeGenTask)
 
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -20,7 +25,7 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 libraryDependencies ++= Seq(
   specs2 % Test,
   // WebJars pull in client-side web libraries
-  "org.webjars" %% "webjars-play" % "2.4.0-1",
+  "org.webjars" %% "webjars-play" % "2.4.0-1" exclude ("org.webjars", "jquery"),
   "org.webjars" % "jquery" % "2.1.3",
   "org.webjars" % "bootstrap" % "3.3.6",
 

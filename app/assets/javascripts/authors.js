@@ -41,32 +41,26 @@ $(function () {
 
     var id = $(this).attr("data-author-id");
     var els = authorSetup(id);
+    els.message.text('');
 
     importResult.ajax({
       success: function (data) {
-        console.log("author-import success " + id);
-        if (data.body != undefined) {
-          console.log("author-import data body is defined " + id);
-          $.each(data.body, function (idx, item) {
-            switch (item.status) {
-              case "ok":
-                $(els.storyMessages.get(idx)).text("Found at " + item.work_url);
-                break;
-              case "not_found":
-                $(els.storyMessages.get(idx)).text(item.error);
-                break;
-            }
-            els.message.text("Please check stories below for results")
+        if (data.status = 'error') {
+          els.message.addClass('text-warning bg-warning');
+        }
+        if (data.messages != undefined) {
+          $.each(data.messages, function (idx, item) {
+            els.message.append(item + '<br/>')
           })
         } else if (data.error != undefined) {
-          console.log("author-import data ERROR is defined " + els.message.text());
           els.message.addClass('text-warning bg-warning');
           els.message.text("Error: " + data.error);
         }
       },
       error: function (data, status, err) {
-        console.log("author-import failure " + id);
-        els.message.text('An error has occurred: "' + err + '". Status: ' + status)
+        els.message.addClass('text-warning bg-warning');
+        els.message.text('An error has occurred: "' + err + '". Status: ' + status);
+        els.message.append('MESSAGES: ' + data.messages)
       },
       complete: function () {
         els.message.remove(img);
@@ -80,6 +74,7 @@ $(function () {
     console.log("author-import click handler done " + id);
   });
 
+  // Check all
   $(".author-check-button").click(function (event) {
     var id = $(this).attr("data-author-id");
     var els = authorSetup(id);
@@ -121,6 +116,7 @@ $(function () {
     });
   })
 
+  // Do not import all
   $(".author-not-import-button").click(function (event) {
     var id = $(this).attr("data-author-id");
     var els = authorSetup(id);

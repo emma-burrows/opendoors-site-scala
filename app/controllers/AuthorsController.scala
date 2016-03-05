@@ -50,9 +50,10 @@ object AuthorsController extends Controller with ThingGenerator {
     for {
       author <- authorFuture(authorId)
       items   = author.stories.map(list => list.map(Archive.storyToArchiveItem(author.author, _))).getOrElse(List())
-      result  = archive.createWorks("archivist", false, false, Charset.defaultCharset(), "", items)
+      result <- archive.createWorks("testy", false, false, Charset.defaultCharset(), "", items)
     } yield {
-      Ok(Json.writeJson(Error("Not implemented")))
+      println(result)
+      Ok(Json.writeJson(result))
     }
   }
 
