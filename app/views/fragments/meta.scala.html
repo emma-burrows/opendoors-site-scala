@@ -1,4 +1,4 @@
-@(author: Author, work: models.Work, appName: String)
+@(author: Author, work: models.Work, chapters: List[Chapter] = List(), appName: String)
 
 @isAuthorView = @{ true }
 
@@ -10,7 +10,7 @@
 
 <div class="row workdiv @cssClass" id="@work.ID">
   <div class="col-lg-6 col-md-7 col-sm-6 storytitle">
-    @if(workType == "Story" && (work.url.isEmpty && work.asInstanceOf[Story].chapters.map(_.size).getOrElse(0) > 0)) {
+    @if(workType == "Story" && (work.url.isEmpty && chapters.size > 0)) {
       <h3>@work.title</h3>
     } else {
       @if(workType == "Story" && work.url.isDefined && !work.url.get.matches("^https?://.*")) {
@@ -34,17 +34,12 @@
     <span class="summary">@Html(work.summary.getOrElse(""))</span> <br />
 
     @if(workType == "Story") {
-      @*@work.asInstanceOf[Story].chapters.map { chapters =>*@
-      @*@for( chapter <- chapters) {*@
-        @*<ol>*@
-          @*@if(chapter.url == "") {*@
-            @*<li><a href="">@chapter.title</a></li>*@
-          @*} else {*@
-            @*<li>chapter.title</li>*@
-          @*}*@
-        @*}*@
-    @*</ol>
-//      }*@
+      @chapters.map { chapters =>
+      <ol>
+        <li>foo</li>
+
+      </ol>
+      }
     </div>
 
   <div class="col-lg-6 col-md-5 col-sm-6 links">

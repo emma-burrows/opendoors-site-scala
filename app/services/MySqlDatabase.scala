@@ -1,7 +1,7 @@
 package services
 
 import models.db.Tables.profile.api._
-import models.{Bookmark, Story, Author, AuthorWithWorks}
+import models._
 import models.db.Tables
 import models.db.Tables._
 import play.api.Play
@@ -16,9 +16,10 @@ object MySqlDatabase {
   val db = DatabaseConfigProvider.get[JdbcProfile](Play.current).db
 
   lazy val authorsAndWorks = Authors
-    .joinLeft(Stories).on(_.id === _.authorid)
+    .joinLeft(Stories.joinLeft(Chapters).on(_.id === _.storyid)).on(_.id === _._1.authorid)
     .joinLeft(Bookmarks).on(_._1.id === _.authorid)
-    .map { case ((a, s), b) => (a, s, b) }
+    .map { case ((author, storiesAndChapters), bookmarks) =>
+      (author, storiesAndChapters, bookmarks) }
 
   private def sequence[T](l : List[Option[T]]) =
     if (l.contains(None)) None else Some(l.flatten)
@@ -35,16 +36,26 @@ object MySqlDatabase {
             (
               author,
               works.map { case (_, s, b) =>
-                val stories   = s.map(x => (Story.apply _).tupled(Tables.StoriesRow.unapply(x).get))
+                val stories = s.groupBy(_._1)
+                  .map {
+                    case (ss, scs: Iterable[(Tables.StoriesRow, Option[Tables.ChaptersRow])]) =>
+                      val story = (Story.apply _).tupled(Tables.StoriesRow.unapply(ss).get)
+                      val chapters =
+                        scs.map(_._2)
+                          .map(opt => opt.map((x: Tables.ChaptersRow) => (Chapter.apply _).tupled(Tables.ChaptersRow.unapply(x).get)))
+                          .toList
+                      StoryWithChapters(story = story, chapters = sequence(chapters))
+                  }
                 val bookmarks = b.map(x => (Bookmark.apply _).tupled(Tables.BookmarksRow.unapply(x).get))
                 (stories, bookmarks)
               }
-              .toList
               .unzip
             )
         }
         .map { case (author, (stories, bookmarks)) =>
-          AuthorWithWorks(author, sequence(stories), sequence(bookmarks))
+          AuthorWithWorks(author,
+                          if (stories.isEmpty) None else Some(stories.flatten.toList),
+                          sequence(bookmarks.toList))
         }
         .toSeq
         .sortBy(aww => aww.author.name)

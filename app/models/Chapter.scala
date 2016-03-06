@@ -1,15 +1,13 @@
 package models
 
-import org.joda.time.DateTime
+import java.util.Date
 
-case class Chapter(ID: Int,
+case class Chapter(ID: Long,
+                   position: Option[Long],
                    title: String,
                    authorid: Int,
-                   text: String,
-                   date: DateTime,
-                   storyid: Int,
-                   notes: String,
-                   position: Option[Long],
-                   url: String,
-
-                   story: Option[Story])
+                   text: Option[String] = None,
+                   date: Date,
+                   storyid: Long,
+                   notes: Option[String] = None,
+                   url: Option[String] = None)

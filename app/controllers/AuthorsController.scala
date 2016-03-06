@@ -38,7 +38,7 @@ object AuthorsController extends Controller with ThingGenerator {
   def findAll(authorId: Long) = Action.async {
     for {
       stories <- authorFuture(authorId).map(_.stories.getOrElse(List()))
-      urls     = stories.map(_.url.getOrElse(""))
+      urls     = stories.map(_.story.url.getOrElse(""))
       result  <- archive.findUrls(urls)
     } yield {
       println("FindAll response: " + Archive.responseToJson(result))

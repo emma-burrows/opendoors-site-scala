@@ -31,8 +31,8 @@
         @if(author.stories.isDefined) {
           @author.stories.map { stories =>
             <h3>Stories</h3>
-            @stories.sortBy(_.title).map { story =>
-              @fragments.meta(author.author, story, appName)
+            @stories.sortBy(_.story.title).map { storyWithChapters =>
+              @fragments.meta(author.author, storyWithChapters.story, storyWithChapters.chapters.getOrElse(List()), appName)
             }
           }
         }
@@ -41,7 +41,7 @@
           @author.bookmarks.map { bookmarks =>
             <h3>Bookmarks</h3>
             @bookmarks.sortBy(_.title).map { bookmark =>
-              @fragments.meta(author.author, bookmark, appName)
+              @fragments.meta(author.author, bookmark, List(), appName)
             }
           }
         }

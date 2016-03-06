@@ -1,6 +1,6 @@
 package services
 
-import models.{Author, Story}
+import models.{StoryWithChapters, Author, Story}
 import otw.api.request.Work
 import otw.api.response.{ArchiveApiError, ArchiveResponse}
 import utils.Json
@@ -19,12 +19,11 @@ object Archive {
 
   }
 
-  def storyToArchiveItem(author: Author, story: Story) = {
+  def storyToArchiveItem(author: Author, storyWithChapters: StoryWithChapters) = {
+    val story = storyWithChapters.story
     val chapters =
-      story.chapters.map {
-        _.map { chapter =>
-          chapter.url
-        }
+      storyWithChapters.chapters.map {
+        list => list.map(chapter => chapter.url.getOrElse(""))
       }.getOrElse(List())
 
     Work(

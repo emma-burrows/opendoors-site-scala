@@ -42,8 +42,7 @@ case class Bookmark(
                      override val imported: Boolean = false,
                      override val doNotImport: Boolean = false,
                      override val ao3Url: Option[String] = None
-                   ) extends Work {
-}
+                   ) extends Work
 
 case class Story(
                   val ID: Long,
@@ -63,6 +62,9 @@ case class Story(
                   override val imported: Boolean = false,
                   override val doNotImport: Boolean = false,
                   override val ao3Url: Option[String] = None
-                ) extends Work {
-  val chapters: Option[List[Chapter]] = None
-}
+                ) extends Work
+
+case class StoryWithChapters(
+                            story: Story,
+                            chapters: Option[List[Chapter]] = None
+                            )
