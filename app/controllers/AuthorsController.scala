@@ -31,6 +31,7 @@ object AuthorsController extends Controller with ThingGenerator {
 
   def list = Action.async { request =>
     authorsWithWorks().map { authors =>
+      authors.groupBy(_.stories)
       Ok(views.html.authors(authors, appName))
     }
   }
@@ -39,7 +40,7 @@ object AuthorsController extends Controller with ThingGenerator {
     for {
       stories <- authorFuture(authorId).map(_.stories.getOrElse(List()))
       urls     = stories.map(_.story.url.getOrElse(""))
-      result  <- archive.findUrls(urls)
+      result  <- archive.findUrls(urls.toList)
     } yield {
       println("FindAll response: " + Archive.responseToJson(result))
       Ok(Archive.responseToJson(result))
@@ -50,9 +51,9 @@ object AuthorsController extends Controller with ThingGenerator {
     for {
       author <- authorFuture(authorId)
       items   = author.stories.map(list => list.map(Archive.storyToArchiveItem(author.author, _))).getOrElse(List())
-      result <- archive.createWorks("testy", false, false, Charset.defaultCharset(), "", items)
+      result <- archive.createWorks("testy", false, false, Charset.defaultCharset(), "", items.toList)
     } yield {
-      println(result)
+      println("ImportAll response: " + result)
       Ok(Json.writeJson(result))
     }
   }

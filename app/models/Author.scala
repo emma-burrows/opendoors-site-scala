@@ -9,6 +9,6 @@ case class Author(ID: Long,
 
 case class AuthorWithWorks(
                           author: Author,
-                          stories: Option[List[StoryWithChapters]] = None,
-                          bookmarks: Option[List[Bookmark]] = None
+                          stories: Option[Seq[StoryWithChapters]] = None,
+                          bookmarks: Option[Seq[Bookmark]] = None
                           )

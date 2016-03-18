@@ -82,16 +82,16 @@ trait Tables extends BookmarkTable with StoriesTable {
     * @param notes Database column Notes SqlType(TEXT), Default(None)
     * @param url Database column Url SqlType(VARCHAR), Length(1024,true), Default(None) */
   case class ChaptersRow(id: Long, position: Option[Long] = None, title: String = "", authorid: Int = 0,
-                         text: Option[String] = None, date: java.sql.Date, storyid: Long = 0,
+                         text: Option[String] = None, date: Option[java.sql.Date] = None, storyid: Long = 0,
                          notes: Option[String] = None, url: Option[String] = None)
 
   /** GetResult implicit for fetching ChaptersRow objects using plain SQL queries */
   implicit def GetResultChaptersRow(implicit e0: GR[Long], e1: GR[Option[Long]], e2: GR[String], e3: GR[Option[String]],
-                                    e4: GR[java.sql.Date]): GR[ChaptersRow] = {
+                                    e4: GR[Option[java.sql.Date]]): GR[ChaptersRow] = {
     GR {
       prs => import prs._
         ChaptersRow
-          .tupled((<<[Long], <<?[Long], <<[String], <<[Int], <<?[String], <<[java.sql.Date], <<[Long], <<?[String], <<?[String]))
+          .tupled((<<[Long], <<?[Long], <<[String], <<[Int], <<?[String], <<?[java.sql.Date], <<[Long], <<?[String], <<?[String]))
     }
   }
 
@@ -109,7 +109,7 @@ trait Tables extends BookmarkTable with StoriesTable {
     /** Database column Text SqlType(MEDIUMTEXT), Length(16777215,true), Default(None) */
     val text: Rep[Option[String]] = column[Option[String]]("Text", O.Length(16777215, varying = true), O.Default(None))
     /** Database column Date SqlType(DATE) */
-    val date: Rep[java.sql.Date] = column[java.sql.Date]("Date")
+    val date: Rep[Option[java.sql.Date]] = column[Option[java.sql.Date]]("Date")
     /** Database column StoryID SqlType(INT), Default(0) */
     val storyid: Rep[Long] = column[Long]("StoryID", O.Default(0))
     /** Database column Notes SqlType(TEXT), Default(None) */
@@ -124,10 +124,10 @@ trait Tables extends BookmarkTable with StoriesTable {
 
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = {
-      (Rep.Some(id), position, Rep.Some(title), Rep.Some(authorid), text, Rep.Some(date), Rep
+      (Rep.Some(id), position, Rep.Some(title), Rep.Some(authorid), text, date, Rep
         .Some(storyid), notes, url).shaped.<>({ r => import r._;
         _1.map(_ => ChaptersRow.tupled((_1.get, _2, _3.get, _4
-          .get, _5, _6.get, _7.get, _8, _9)))
+          .get, _5, _6, _7.get, _8, _9)))
       }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
     }
   }

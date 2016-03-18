@@ -34,12 +34,11 @@
     <span class="summary">@Html(work.summary.getOrElse(""))</span> <br />
 
     @if(workType == "Story") {
-      @chapters.map { chapters =>
       <ol>
-        <li>foo</li>
-
-      </ol>
+      @chapters.map { chapter =>
+        <li>@chapter.title</li>
       }
+      </ol>
     </div>
 
   <div class="col-lg-6 col-md-5 col-sm-6 links">

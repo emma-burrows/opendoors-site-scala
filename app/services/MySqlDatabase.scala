@@ -9,58 +9,59 @@ import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
+import scala.collection.immutable.Iterable
 import scala.concurrent.Future
 
 object MySqlDatabase {
 
   val db = DatabaseConfigProvider.get[JdbcProfile](Play.current).db
 
-  lazy val authorsAndWorks = Authors
-    .joinLeft(Stories.joinLeft(Chapters).on(_.id === _.storyid)).on(_.id === _._1.authorid)
-    .joinLeft(Bookmarks).on(_._1.id === _.authorid)
-    .map { case ((author, storiesAndChapters), bookmarks) =>
-      (author, storiesAndChapters, bookmarks) }
+  lazy val storiesAndChapters = Stories.joinLeft(Chapters).on(_.id === _.storyid)
 
-  private def sequence[T](l : List[Option[T]]) =
+  lazy val authorsAndStories = Authors
+    .joinLeft(storiesAndChapters).on(_.id === _._1.authorid)
+    .map { case ((author, storiesWithChapters)) =>
+      (author, storiesWithChapters)
+    }
+
+  lazy val authorsAndBookmarks = Authors
+    .joinLeft(Bookmarks).on(_.id === _.authorid)
+
+  private def sequence[T](l : Seq[Option[T]]) =
     if (l.contains(None)) None else Some(l.flatten)
 
   def authorsWithWorks(filter: String = ""): Future[Seq[AuthorWithWorks]] = db.run {
 
-    authorsAndWorks.result.map(
-      _.groupBy {
-          case (a, s, b) =>
-            (Author.apply _).tupled(Tables.AuthorsRow.unapply(a).get)
-      }
-        .map {
-          case (author, works) =>
-            (
-              author,
-              works.map { case (_, s, b) =>
-                val stories = s.groupBy(_._1)
-                  .map {
-                    case (ss, scs: Iterable[(Tables.StoriesRow, Option[Tables.ChaptersRow])]) =>
-                      val story = (Story.apply _).tupled(Tables.StoriesRow.unapply(ss).get)
-                      val chapters =
-                        scs.map(_._2)
-                          .map(opt => opt.map((x: Tables.ChaptersRow) => (Chapter.apply _).tupled(Tables.ChaptersRow.unapply(x).get)))
-                          .toList
-                      StoryWithChapters(story = story, chapters = sequence(chapters))
+    for {
+      authorResults <- authorsAndStories.result
+    } yield {
+      authorResults
+        .groupBy(a => (Author.apply _).tupled(Tables.AuthorsRow.unapply(a._1).get))
+        .map { row =>
+          val author: Author = row._1
+          val stories = {
+            val maybeStoryRows = sequence(row._2.map { case (a, s) => s }.toList)
+            maybeStoryRows
+              .map { list =>
+                list
+                  .groupBy(s => (Story.apply _).tupled(Tables.StoriesRow.unapply(s._1).get))
+                  .map { case (s, scs) =>
+                    val chapters: List[Option[Chapter]] = scs.map { opt =>
+                      opt._2.map {
+                        c => (Chapter.apply _).tupled(Tables.ChaptersRow.unapply(c).get)
+                      }
+                    }.toList
+
+                    StoryWithChapters(s, sequence(chapters).map(_.toList))
                   }
-                val bookmarks = b.map(x => (Bookmark.apply _).tupled(Tables.BookmarksRow.unapply(x).get))
-                (stories, bookmarks)
+                  .toSeq
               }
-              .unzip
-            )
-        }
-        .map { case (author, (stories, bookmarks)) =>
-          AuthorWithWorks(author,
-                          if (stories.isEmpty) None else Some(stories.flatten.toList),
-                          sequence(bookmarks.toList))
+          }
+
+          AuthorWithWorks(author, stories)
         }
         .toSeq
         .sortBy(aww => aww.author.name)
-    )
-
+    }
   }
-
 }
