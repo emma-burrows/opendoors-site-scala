@@ -5,7 +5,7 @@ import java.nio.charset.Charset
 import models.db.Tables._
 import models.db.Tables.profile.api._
 import otw.api.ArchiveClient
-import otw.api.response.Error
+import otw.api.response.{FindUrlResponse, Error}
 import play.api.Play
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -14,16 +14,19 @@ import services.MySqlDatabase._
 import services.{Archive, ThingGenerator}
 import utils.Json
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
 case class GenericResponse(status: Int, body: String)
 
 object AuthorsController extends Controller with ThingGenerator {
 
-  val config = Play.application.configuration
+  val playConfig = Play.application.configuration
+  val config = Await.result(archiveconfig, 1 second)
 
-  val appName = config.getString("application.name").getOrElse("")
+  val appName = playConfig.getString("application.name").getOrElse("")
 
-  val archive = ArchiveClient(config.getString("archive.token").getOrElse(""),
-                            config.getString("archive.host").getOrElse(""))
+  val archive = ArchiveClient(config.archivetoken.getOrElse(""), config.archivehost.getOrElse(""))
 
   def authorFuture(authorId: Long) = authorsWithWorks().map { authors =>
     authors.filter(a => a.author.ID == authorId).head
@@ -32,7 +35,7 @@ object AuthorsController extends Controller with ThingGenerator {
   def list = Action.async { request =>
     authorsWithWorks().map { authors =>
       authors.groupBy(_.stories)
-      Ok(views.html.authors(authors, appName))
+      Ok(views.html.authors(authors, appName, config))
     }
   }
 
@@ -42,12 +45,21 @@ object AuthorsController extends Controller with ThingGenerator {
       urls     = stories.map(_.story.url.getOrElse(""))
       result  <- archive.findUrls(urls.toList)
     } yield {
-      println("FindAll response: " + Archive.responseToJson(result))
-      Ok(Archive.responseToJson(result))
+      if (result.isRight) {
+        result match {
+          case Right(resp) => updateStoryStatuses(resp.asInstanceOf[FindUrlResponse], stories)
+          case Left(e) =>
+        }
+      }
+
+      val jsonResponse = Archive.responseToJson(result)
+
+      println("FindAll response: " + jsonResponse)
+      Ok(jsonResponse)
     }
   }
 
-  def importAll(authorId: Long) = Action.async {
+  def importAll(authorId: Long) = Action.async { implicit request =>
     for {
       author <- authorFuture(authorId)
       items   = author.stories.map(list => list.map(Archive.storyToArchiveItem(author.author, _))).getOrElse(List())
@@ -60,7 +72,6 @@ object AuthorsController extends Controller with ThingGenerator {
 
   def doNotImportAll(authorId: Long, doNotImport: Boolean) = Action.async {
 
-    // Update author
     val authorQ    = for { a <- Authors   if a.id === authorId } yield a.donotimport
     val storiesQ   = for { s <- Stories   if s.authorid === authorId } yield s.donotimport
     val bookmarksQ = for { b <- Bookmarks if b.authorid === authorId } yield b.donotimport
