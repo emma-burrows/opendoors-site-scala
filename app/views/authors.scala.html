@@ -1,6 +1,6 @@
-@(authors: Seq[AuthorWithWorks], appName: String)
+@(authors: Seq[AuthorWithWorks], appName: String, config: ArchiveConfig)
 
-@main("AuthorsController", "authors") {
+@main("AuthorsController", "authors", config) {
 
   @if(authors.nonEmpty) {
     @for( (author, index) <- authors.zipWithIndex) {
@@ -32,7 +32,10 @@
           @author.stories.map { stories =>
             <h3>Stories</h3>
             @stories.sortBy(_.story.title).map { storyWithChapters =>
-              @fragments.meta(author.author, storyWithChapters.story, storyWithChapters.chapters.getOrElse(List()), appName)
+              @fragments.meta(author.author,
+                storyWithChapters.story,
+                storyWithChapters.chapters.getOrElse(List()).sortBy(_.position),
+                appName)
             }
           }
         }

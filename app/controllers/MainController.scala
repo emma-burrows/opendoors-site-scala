@@ -17,5 +17,4 @@ object MainController extends Controller {
       ).as("text/javascript")
     }
   }
-
 }

@@ -10,7 +10,8 @@
 
 <div class="row workdiv @cssClass" id="@work.ID">
   <div class="col-lg-6 col-md-7 col-sm-6 storytitle">
-    @if(workType == "Story" && (work.url.isEmpty && chapters.size > 0)) {
+
+    @if(workType == "Story" && (work.url.isEmpty && chapters.nonEmpty)) {
       <h3>@work.title</h3>
     } else {
       @if(workType == "Story" && work.url.isDefined && !work.url.get.matches("^https?://.*")) {
@@ -20,7 +21,7 @@
       }
     }
 
-    @if(isAuthorView != true) {
+    @if(!isAuthorView) {
       <span>by <b>@author.name</b></span>
     } <br />
 
@@ -29,18 +30,25 @@
         <span>- @r</span>
       }
       <br />
-      @work.tags</b></span> <br />
+      @work.categories @work.tags</b></span> <br />
 
     <span class="summary">@Html(work.summary.getOrElse(""))</span> <br />
 
     @if(workType == "Story") {
       <ol>
       @chapters.map { chapter =>
-        <li>@chapter.title</li>
+        @if(chapter.url.isEmpty) {
+          <li><!-- TODO chapter view --> @chapter.title</li>
+        } else {
+          <li><a href="/@appName/works/@chapter.url">@chapter.title</a></li>
+          @routes.Assets.at(s"works/$appName/" + chapter.url.get).url.replaceAll("/assets", "")
+        }
       }
       </ol>
-    </div>
+    }
+  </div>
 
+  @if(workType == "Story") {
   <div class="col-lg-6 col-md-5 col-sm-6 links">
     @if(work.imported) {
       @work.ao3Url.map { ao3url =>

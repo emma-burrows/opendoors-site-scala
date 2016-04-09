@@ -1,4 +1,4 @@
-@(title: String, nav: String)(content: Html)
+@(title: String, nav: String, config: ArchiveConfig)(content: Html)
 
 <!DOCTYPE html>
 <html>
@@ -27,24 +27,18 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-<li class="@("active".when(nav == "authors"))">
-<a href="@routes.AuthorsController.list()">Stories by Author (use for importing)</a>
-</li>
-            @*@activeLink(currentPath:String) = @{*@
-              @*if(s"${request.path}".equals(currentPath)) "active"*@
-            @*}*@
-            @*<li class="@activeLink('/')">*@
-              @*<a href="@routes.AuthorsController.list()">Stories by Author (use for importing)</a>*@
-            @*</li>*@
-            @*<li class="@(action == "Index" && controller == "Story" ? "active": "")">*@
-            @*@Html.ActionLink("Stories still to be imported", "Index", "Story")*@
-            @*</li>*@
-            @*<li class="@(action == "Imported" ? "active": "")">*@
-            @*@Html.ActionLink("Imported stories", "Imported", "Story")*@
-            @*</li>*@
-            @*<li class="@(action == "DoNotImport" ? "active": "")">*@
-            @*@Html.ActionLink("Stories marked do not import", "DoNotImport", "Story")*@
-            @*</li>*@
+            <li class="@("active".when(nav == "authors"))">
+              <a href="@routes.AuthorsController.list()">Stories by Author (use for importing)</a>
+            </li>
+            <li class="@("active".when(nav == "not-imported"))">
+              @*<a href="@routes.StoriesController.list()">Stories still to be imported</a>*@
+            </li>
+            <li class="@("active".when(nav == "authors"))">
+              @*<a href="@routes.StoriesController.imported()">Imported stories</a>*@
+            </li>
+            <li class="@("active".when(nav == "authors"))">
+              @*<a href="@routes.StoriesController.doNotImport()">Stories marked do not import</a>*@
+            </li>
           </ul>
         </div>
           <!-- /.navbar-collapse -->
@@ -52,6 +46,17 @@
         <!-- /.container-fluid -->
     </nav>
     <div class="container">
+      <hr />
+      <h1>Title</h1>
+      @if(config != null) {
+      <div class="message-info">
+        Send emails is <b>@config.sendemail</b>.
+        <br />
+        Post works as drafts is <b>@config.postworks</b>.
+        <br />
+        Archive server is <b>@config.archivehost</b>
+      </div>
+      }
     @content
     </div>
   </body>

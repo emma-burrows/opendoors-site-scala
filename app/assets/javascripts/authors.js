@@ -60,7 +60,13 @@ $(function () {
       error: function (data, status, err) {
         els.message.addClass('text-warning bg-warning');
         els.message.text('An error has occurred: "' + err + '". Status: ' + status);
-        els.message.append('MESSAGES: ' + data.messages)
+        if (data.messages != 'undefined') {
+          els.message.append('MESSAGES: ' + data.messages)
+        }
+        else {
+          els.message.append(data)
+        }
+
       },
       complete: function () {
         els.message.remove(img);
