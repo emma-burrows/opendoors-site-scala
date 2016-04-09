@@ -23,7 +23,8 @@ trait ThingGenerator {
           Some("a story about a thing"),
           authorID = id,
           rating = Random.shuffle(ratings).head,
-          date = new java.sql.Date(DateTime.now().getMillis),
+          date = Some(new java.sql.Date(DateTime.now().getMillis)),
+          updated = Some(new java.sql.Date(DateTime.now().getMillis)),
           tags = Some("thing"),
           url = Random.shuffle(urls).headOption
     )

@@ -11,7 +11,7 @@ sealed trait Work {
   val notes: Option[String] = None
   val authorID: Long
   val rating: String
-  val date: Date
+  val date: Option[Date]
   val tags: Option[String] = None
   val categories: Option[String] = None
   val warnings: Option[String] = None
@@ -31,7 +31,7 @@ case class Bookmark(
                      override val notes: Option[String] = None,
                      override val authorID: Long,
                      override val rating: String,
-                     override val date: Date,
+                     override val date: Option[Date],
                      override val tags: Option[String] = None,
                      override val categories: Option[String] = None,
                      override val warnings: Option[String] = None,
@@ -51,7 +51,8 @@ case class Story(
                   override val notes: Option[String] = None,
                   override val authorID: Long,
                   override val rating: String,
-                  override val date: Date,
+                  override val date: Option[Date],
+                  val updated: Option[Date],
                   override val tags: Option[String] = None,
                   override val categories: Option[String] = None,
                   override val warnings: Option[String] = None,
