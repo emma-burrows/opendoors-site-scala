@@ -3,30 +3,67 @@
 # --- !Ups
 set @today = DATE_FORMAT(NOW(), '%Y%m%d_%H%i');
 
-SET @sql_config = CONCAT("RENAME TABLE archiveconfig TO ", @today, "_archiveconfig");
+SELECT Count(*)
+INTO @exists
+FROM information_schema.tables
+WHERE table_type = 'BASE TABLE'
+AND table_name = 'archiveconfig';
+
+SET @sql_config = If(@exists>0,
+                     CONCAT("RENAME TABLE archiveconfig TO ", @today, "_archiveconfig"),
+                     'SELECT \'nothing to rename\' status');
 PREPARE statemt FROM @sql_config;
 EXECUTE statemt;
 DEALLOCATE PREPARE statemt;
 
-SET @sql_authors = CONCAT("RENAME TABLE authors TO ", @today, "_authors");
+SELECT Count(*)
+INTO @exists
+FROM information_schema.tables
+WHERE table_type = 'BASE TABLE'
+      AND table_name = 'authors';
+SET @sql_authors = If(@exists>0,
+                      CONCAT("RENAME TABLE authors TO ", @today, "_authors"),
+                      'SELECT \'nothing to rename\' status');
 PREPARE statemt FROM @sql_authors;
 EXECUTE statemt;
 DEALLOCATE PREPARE statemt;
 
-SET @sql_bookmarks = CONCAT("RENAME TABLE bookmarks TO ", @today, "_bookmarks");
+SELECT Count(*)
+INTO @exists
+FROM information_schema.tables
+WHERE table_type = 'BASE TABLE'
+      AND table_name = 'bookmarks';
+SET @sql_bookmarks = If(@exists>0,
+                        CONCAT("RENAME TABLE bookmarks TO ", @today, "_bookmarks"),
+                        'SELECT \'nothing to rename\' status');
 PREPARE statemt FROM @sql_bookmarks;
 EXECUTE statemt;
 DEALLOCATE PREPARE statemt;
 
-SET @sql_chapters = CONCAT("RENAME TABLE chapters TO ", @today, "_chapters");
+SELECT Count(*)
+INTO @exists
+FROM information_schema.tables
+WHERE table_type = 'BASE TABLE'
+      AND table_name = 'chapters';
+SET @sql_bookmarks = If(@exists>0,
+                        CONCAT("RENAME TABLE chapters TO ", @today, "_chapters"),
+                        'SELECT \'nothing to rename\' status');
 PREPARE statemt FROM @sql_chapters;
 EXECUTE statemt;
 DEALLOCATE PREPARE statemt;
 
-SET @sql_stories = CONCAT("RENAME TABLE stories TO ", @today, "_stories");
+SELECT Count(*)
+INTO @exists
+FROM information_schema.tables
+WHERE table_type = 'BASE TABLE'
+      AND table_name = 'stories';
+SET @sql_bookmarks = If(@exists>0,
+                        CONCAT("RENAME TABLE stories TO ", @today, "_stories"),
+                        'SELECT \'nothing to rename\' status');
 PREPARE statemt FROM @sql_stories;
 EXECUTE statemt;
 DEALLOCATE PREPARE statemt;
+
 
 CREATE TABLE `archiveconfig` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -67,8 +104,8 @@ CREATE TABLE `stories` (
   `notes` text NULL DEFAULT NULL,
   `authorid` int(11) NOT NULL DEFAULT '0',
   `rating` varchar(25) NOT NULL DEFAULT '',
-  `date` date NOT NULL,
-  `updated` DATE NOT NULL,
+  `date` date,
+  `updated` DATE,
   `categories` varchar(45) DEFAULT NULL,
   `tags` varchar(1024) DEFAULT NULL,
   `warnings` varchar(255) DEFAULT NULL,
@@ -93,7 +130,7 @@ CREATE TABLE `bookmarks` (
   `notes` text NULL DEFAULT NULL,
   `authorid` int(11) NOT NULL DEFAULT '0',
   `rating` varchar(255) NOT NULL DEFAULT '',
-  `date` date NOT NULL,
+  `date` date,
   `categories` varchar(45) DEFAULT NULL,
   `tags` varchar(1024) DEFAULT NULL,
   `warnings` varchar(255) DEFAULT NULL,

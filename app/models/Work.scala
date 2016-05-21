@@ -2,7 +2,6 @@ package models
 
 import java.sql.Date
 
-import org.joda.time.DateTime
 
 sealed trait Work {
   val ID: Long
@@ -52,7 +51,7 @@ case class Story(
                   override val authorID: Long,
                   override val rating: String,
                   override val date: Option[Date],
-                  val updated: Option[Date],
+                  val updated: Option[Date] = None,
                   override val tags: Option[String] = None,
                   override val categories: Option[String] = None,
                   override val warnings: Option[String] = None,
@@ -69,3 +68,8 @@ case class StoryWithChapters(
                             story: Story,
                             chapters: Option[List[Chapter]] = None
                             )
+
+case class StoryWithAuthors(
+                          story: Story,
+                          authors: Seq[Author]
+                          )
