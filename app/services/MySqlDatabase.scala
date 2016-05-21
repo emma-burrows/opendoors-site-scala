@@ -1,16 +1,14 @@
 package services
 
-import models.db.Tables.profile.api._
 import models._
 import models.db.Tables
 import models.db.Tables._
-import otw.api.response.{WorkFoundResponse, WorkNotFoundResponse, ArchiveResponse, FindUrlResponse}
+import models.db.Tables.profile.api._
+import otw.api.response.{FindWorkResponse, WorkFoundResponse, WorkNotFoundResponse}
 import play.api.Play
 import play.api.db.slick.DatabaseConfigProvider
-import slick.dbio
-import slick.dbio.Effect.Read
-import slick.driver.JdbcProfile
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import slick.driver.JdbcProfile
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -18,6 +16,8 @@ import scala.concurrent.{Await, Future}
 object MySqlDatabase {
 
   val db = DatabaseConfigProvider.get[JdbcProfile](Play.current).db
+
+  // Get stuff
 
   // There should only be one row in the config table
   val archiveconfig: Future[ArchiveConfig] = db.run {
@@ -32,6 +32,8 @@ object MySqlDatabase {
 
   lazy val storiesAndChapters = Stories.joinLeft(Chapters).on(_.id === _.storyid)
 
+  lazy val storiesAndAuthors = Stories.joinLeft(Authors).on(_.authorid === _.id)
+
   lazy val authorsAndStories = Authors
     .joinLeft(storiesAndChapters).on(_.id === _._1.authorid)
     .map { case ((author, storiesWithChapters)) =>
@@ -39,9 +41,6 @@ object MySqlDatabase {
     }
 
   def authorBookmarks(id: Long) = db.run { Bookmarks.filter(_.authorid === id).result }
-
-  private def sequence[T](l: Seq[Option[T]]) =
-    if (l.contains(None)) None else Some(l.flatten)
 
   def authorsWithWorks(filter: String = ""): Future[Seq[AuthorWithWorks]] = db.run {
 
@@ -72,15 +71,12 @@ object MySqlDatabase {
           author -> stories
         }
 
-    for {
-      authorResults <- authorsAndStories.result
-
-    } yield {
+    for (authorResults <- authorsAndStories.result)
+    yield {
       val stories = groupStoryResults(authorResults)
         stories.map { case (author, stories) =>
           val bookmarkFuture =
-            authorBookmarks(author.ID).map(_.map(b => (Bookmark.apply _).tupled(Tables.BookmarksRow
-                                                                                                     .unapply(b).get)))
+            authorBookmarks(author.ID).map(_.map(b => (Bookmark.apply _).tupled(Tables.BookmarksRow.unapply(b).get)))
           Await.result(bookmarkFuture.map { bookmarks =>
             AuthorWithWorks(author,
                             stories,
@@ -91,18 +87,44 @@ object MySqlDatabase {
     }
   }
 
-  def updateStoryStatuses(findResult: FindUrlResponse, stories: Seq[StoryWithChapters]) = {
+  def storyWithAuthors(id: Long) =
+    for (storyResults <- storiesAndAuthors.filter(_._1.id === id).result)
+    yield {
+      storyResults
+        .groupBy(s => (Story.apply _).tupled(Tables.StoriesRow.unapply(s._1).get))
+        .map { case (s, a) =>
+          StoryWithAuthors(
+            s,
+            a.map { aa => (Author.apply _).tupled(Tables.AuthorsRow.unapply(aa._2.get).get) }
+          )
+      }
+    }
 
-    def storyQ(id: Long) = Stories.filter(_.id === id).map(x => (x.imported, x.ao3url))
 
-    val resultsWithWorks = findResult.body zip stories
-
+  def chapterWithStory(id: Long) = db.run {
     for {
-      r <- resultsWithWorks
-    } yield {
-      r._1 match {
-        case w: WorkFoundResponse => db.run(storyQ(r._2.story.ID).update((true, Some(w.workUrl))))
-        case _: WorkNotFoundResponse => db.run(storyQ(r._2.story.ID).update((false, None)))
+      chapterResult <- Chapters.filter(_.id === id).result
+      storyResult <- storyWithAuthors(chapterResult.head.storyid)
+    }
+    yield {
+      val chapter = (Chapter.apply _).tupled(Tables.ChaptersRow.unapply(chapterResult.head).get)
+      ChapterWithStory(chapter = chapter, storyWithAuthors = storyResult.head)
+    }
+  }
+
+  // Do stuff
+  private def sequence[T](l: Seq[Option[T]]) =
+    if (l.contains(None)) None else Some(l.flatten)
+
+  def updateStoryStatuses(findResult: FindWorkResponse, stories: Seq[StoryWithChapters]) = {
+
+    def storyQ(id: String) = Stories.filter(_.id === id.toLong).map(x => (x.imported, x.ao3url))
+
+    for (r <- findResult.body)
+    yield {
+      r match {
+        case w: WorkFoundResponse => db.run(storyQ(w.originalId).update((true, Some(w.workUrl))))
+        case w: WorkNotFoundResponse => db.run(storyQ(w.originalId).update((false, None)))
       }
     }
   }

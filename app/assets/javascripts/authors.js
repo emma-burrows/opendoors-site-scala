@@ -8,13 +8,14 @@ $(function () {
   var authorSetup = function (id) {
     var el = $('#author' + id),
       message = el.find('.message'),
-      storyMessages = el.find('.Story .message-info');
+      storyMessages = el.find('.Story .message-info'),
+      stories = el.find('.Story');
     console.log("author-import " + id);
     message.removeClass().addClass('message');
     $(message).text();
     message.prepend(img); //http://ajaxload.info/
     $(storyMessages).text('');
-    return { el: el, message: message, storyMessages: storyMessages };
+    return { el: el, message: message, storyMessages: storyMessages, stories: stories };
   };
 
   var toggleDoNotImport = function (el) {
@@ -89,12 +90,19 @@ $(function () {
       success: function (data) {
         if (data.body != undefined) {
           $.each(data.body, function (idx, item) {
+            var storyDiv = $(els.stories.get(idx));
             switch (item.status) {
               case "ok":
                 $(els.storyMessages.get(idx)).text("Found at " + item.work_url);
+                storyDiv.children('.links .import-work').hide();
                 break;
               case "not_found":
+                console.log("not-found");
                 $(els.storyMessages.get(idx)).text(item.error);
+                storyDiv.find('.links a').hide();
+                if (storyDiv.find('.links .import-work').length == 0) {
+                  $(els.stories.get(idx)).find('.links').prepend('<button class="btn btn-info import-work">import</button>')
+                }
                 break;
               case undefined:
                 els.message.text("Empty response from remote server")

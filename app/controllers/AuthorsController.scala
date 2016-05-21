@@ -5,7 +5,8 @@ import java.nio.charset.Charset
 import models.db.Tables._
 import models.db.Tables.profile.api._
 import otw.api.ArchiveClient
-import otw.api.response.{FindUrlResponse, Error}
+import otw.api.request.{FindWorkRequest, OriginalRef}
+import otw.api.response.{FindWorkResponse, Error}
 import play.api.Play
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -42,12 +43,12 @@ object AuthorsController extends Controller with ThingGenerator {
   def findAll(authorId: Long) = Action.async {
     for {
       stories <- authorFuture(authorId).map(_.stories.getOrElse(List()))
-      urls     = stories.map(_.story.url.getOrElse(""))
-      result  <- archive.findUrls(urls.toList)
+      urls     = stories.map(s => OriginalRef(s.story.ID.toString, s.story.url.getOrElse("")))
+      result  <- archive.findUrls(FindWorkRequest(urls.toList))
     } yield {
       if (result.isRight) {
         result match {
-          case Right(resp) => updateStoryStatuses(resp.asInstanceOf[FindUrlResponse], stories)
+          case Right(resp) => updateStoryStatuses(resp.asInstanceOf[FindWorkResponse], stories)
           case Left(e) =>
         }
       }
@@ -63,7 +64,7 @@ object AuthorsController extends Controller with ThingGenerator {
     for {
       author <- authorFuture(authorId)
       items   = author.stories.map(list => list.map(Archive.storyToArchiveItem(author.author, _))).getOrElse(List())
-      result <- archive.createWorks("testy", false, false, Charset.defaultCharset(), "", items.toList)
+      result <- archive.createWorks("testy", sendClaimEmails = false, postWithoutPreview = false, Charset.defaultCharset(), "", items.toList)
     } yield {
       println("ImportAll response: " + result)
       Ok(Json.writeJson(result))

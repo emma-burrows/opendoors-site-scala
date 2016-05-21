@@ -13,23 +13,7 @@ trait StoriesTable {
 
   /** Entity class storing rows of table Stories
     *
-    * @param id Database column id SqlType(INT), AutoInc, PrimaryKey
-    * @param title Database column title SqlType(VARCHAR), Length(255,true), Default()
-    * @param summary Database column summary SqlType(TEXT), Default(None)
-    * @param notes Database column notes SqlType(TEXT), Default(None)
-    * @param authorid Database column authorid SqlType(INT), Default(0)
-    * @param rating Database column rating SqlType(VARCHAR), Length(25,true), Default()
-   *  @param date Database column date SqlType(DATE), Default(None)
-   *  @param categories Database column categories SqlType(VARCHAR), Length(45,true), Default(None)
-   *  @param tags Database column tags SqlType(VARCHAR), Length(1024,true), Default(None)
-   *  @param warnings Database column warnings SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param fandoms Database column fandoms SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param characters Database column characters SqlType(VARCHAR), Length(1024,true), Default(None)
-   *  @param relationships Database column relationships SqlType(VARCHAR), Length(1024,true), Default(None)
-   *  @param url Database column url SqlType(VARCHAR), Length(255,true), Default(None)
-   *  @param imported Database column imported SqlType(BIT), Default(false)
-   *  @param donotimport Database column doNotImport SqlType(BIT), Default(false)
-   *  @param ao3url Database column Ao3Url SqlType(VARCHAR), Length(255,true), Default(None) */
+ */
   case class StoriesRow(id: Long,
                         title: String = "",
                         summary: Option[String] = None,
@@ -115,10 +99,10 @@ trait StoriesTable {
 
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = {
-      (Rep.Some(id), Rep.Some(title), summary, notes, Rep.Some(authorid), Rep.Some(rating), date, updated, categories,
+      (Rep.Some(id), Rep.Some(title), summary, notes, Rep.Some(authorid), Rep.Some(rating), date, Rep.Some(updated), categories,
         tags, warnings, fandoms, characters, relationships, url, Rep.Some(imported), Rep.Some(donotimport), ao3url)
         .shaped.<>({ r => import r._;
-        _1.map(_ => StoriesRow.tupled((_1.get, _2.get, _3, _4, _5.get, _6.get, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16.get, _17.get, _18)))
+        _1.map(_ => StoriesRow.tupled((_1.get, _2.get, _3, _4, _5.get, _6.get, _7, _8.get, _9, _10, _11, _12, _13, _14, _15, _16.get, _17.get, _18)))
       }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
     }
   }
