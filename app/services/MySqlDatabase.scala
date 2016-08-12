@@ -42,7 +42,7 @@ object MySqlDatabase {
 
   def authorBookmarks(id: Long) = db.run { Bookmarks.filter(_.authorid === id).result }
 
-  def authorsWithWorks(filter: String = ""): Future[Seq[AuthorWithWorks]] = db.run {
+  def authorsWithItems(filter: String = ""): Future[Seq[AuthorWithWorks]] = db.run {
 
     def groupStoryResults(authorResults: Seq[(Tables.AuthorsRow, Option[(Tables.StoriesRow, Option[Tables.ChaptersRow])])]):
       Map[Author, Option[Seq[StoryWithChapters]]] =
@@ -83,6 +83,7 @@ object MySqlDatabase {
                             if (bookmarks.isEmpty) None else Some(bookmarks))
           }, 10 seconds)
         }.toSeq
+        .filter(a => a.bookmarks.isDefined || a.stories.isDefined)
         .sortBy(_.author.name)
     }
   }

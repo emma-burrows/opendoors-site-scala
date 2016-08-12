@@ -29,12 +29,12 @@ object AuthorsController extends Controller with ThingGenerator {
 
   val archive = ArchiveClient(config.archivetoken.getOrElse(""), config.archivehost.getOrElse(""))
 
-  def authorFuture(authorId: Long) = authorsWithWorks().map { authors =>
+  def authorFuture(authorId: Long) = authorsWithItems().map { authors =>
     authors.filter(a => a.author.ID == authorId).head
   }
 
   def list = Action.async { request =>
-    authorsWithWorks().map { authors =>
+    authorsWithItems().map { authors =>
       authors.groupBy(_.stories)
       Ok(views.html.authors(authors, appName, config))
     }

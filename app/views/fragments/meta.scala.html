@@ -38,7 +38,7 @@
       <ol>
       @chapters.map { chapter =>
         @if(chapter.url.isEmpty) {
-          <li><!-- TODO chapter view --> @chapter.title</li>
+          <li><a href="@routes.ChapterController.show(chapter.ID)">@chapter.title</a></li>
         } else {
           <li><a href="/@appName/works/@chapter.url">@chapter.title</a></li>
           @routes.Assets.at(s"works/$appName/" + chapter.url.get).url.replaceAll("/assets", "")

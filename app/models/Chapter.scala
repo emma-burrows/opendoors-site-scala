@@ -11,3 +11,8 @@ case class Chapter(ID: Long,
                    storyid: Long,
                    notes: Option[String] = None,
                    url: Option[String] = None)
+
+case class ChapterWithStory(
+                           chapter: Chapter,
+                           storyWithAuthors: StoryWithAuthors
+                           )
