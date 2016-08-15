@@ -1,11 +1,12 @@
 package services
 
+import javax.inject.Inject
+
 import models._
 import models.db.Tables
 import models.db.Tables._
 import models.db.Tables.profile.api._
 import otw.api.response.{FindWorkResponse, WorkFoundResponse, WorkNotFoundResponse}
-import play.api.Play
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.driver.JdbcProfile
@@ -13,9 +14,9 @@ import slick.driver.JdbcProfile
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-object MySqlDatabase {
+class MySqlDatabase @Inject() (dbConfigProvider: DatabaseConfigProvider) {
 
-  val db = DatabaseConfigProvider.get[JdbcProfile](Play.current).db
+  val db = dbConfigProvider.get[JdbcProfile].db
 
   // Get stuff
 

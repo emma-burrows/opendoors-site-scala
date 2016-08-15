@@ -3,18 +3,16 @@ package controllers
 import play.api.mvc._
 import play.api.routing.JavaScriptReverseRouter
 
-object MainController extends Controller {
+class MainController extends Controller {
 
-  def javascriptRoutes = {
-    Action { implicit request =>
-      Ok(
-        JavaScriptReverseRouter("jsRoutes")(
-          routes.javascript.AuthorsController.importAll,
-          routes.javascript.AuthorsController.findAll,
-          routes.javascript.AuthorsController.doNotImportAll,
-          routes.javascript.Assets.at
-        )
-      ).as("text/javascript")
-    }
+  def javascriptRoutes = Action { implicit request =>
+    Ok(
+      JavaScriptReverseRouter("jsRoutes") (
+        routes.javascript.AuthorsController.importAll,
+        routes.javascript.AuthorsController.findAll,
+        routes.javascript.AuthorsController.doNotImportAll,
+        routes.javascript.Assets.at
+      )
+    ).as("text/javascript")
   }
 }

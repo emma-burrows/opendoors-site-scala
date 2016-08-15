@@ -1,6 +1,6 @@
 <configuration>
 
-    <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
+    <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>${application.home}/logs/application.log</file>
@@ -15,7 +15,7 @@
 
         <encoder>
             <pattern>
-                %gray([%-20file:%-3line]) %highlight(%-5level) %boldBlue(%logger{15}) :: %msg %n
+                %blue([%-20file:%-3line]) %highlight(%-5level) %boldBlue(%logger{15}) :: %msg %n
             </pattern>
         </encoder>
 

@@ -1,15 +1,20 @@
 package controllers
 
-import controllers.AuthorsController._
+import javax.inject.Inject
+
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.{Controller, Action}
-import services.MySqlDatabase._
 
 
-object ChapterController extends Controller {
+class ChapterController @Inject() (config: play.api.Configuration, msdb: services.MySqlDatabase)
+  extends Controller {
 
-  def show(chapterId: Long) = Action.async { request =>
-    for { chapterWithStory <- chapterWithStory(chapterId) }
+  val appName = config.getString("application.name").getOrElse("opendoors")
+
+  def show(chapterId: Long) = Action.async { implicit request =>
+    for {
+      config <- msdb.archiveconfig
+      chapterWithStory <- msdb.chapterWithStory(chapterId) }
     yield
       Ok(views.html.chapter(chapterWithStory, appName, config))
   }
