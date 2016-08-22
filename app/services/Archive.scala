@@ -28,6 +28,7 @@ object Archive {
       }.getOrElse(List())
 
     Work(
+      id = story.ID.toString,
       url = story.url.getOrElse(""),
       author = author.name,
       email = author.email,
@@ -38,7 +39,7 @@ object Archive {
       categoryString = story.categories.getOrElse(""),
       relationshipString = story.relationships.getOrElse(""),
       characterString = story.characters.getOrElse(""),
-      chapter_urls = chapters
+      chapterUrls = chapters
     )
   }
 

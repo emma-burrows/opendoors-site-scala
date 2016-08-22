@@ -51,7 +51,8 @@ $(function () {
         }
         if (data.messages != undefined) {
           $.each(data.messages, function (idx, item) {
-            els.message.append(item + '<br/>')
+            els.message.append(item + '<br/>');
+            console.log(data);
           })
         } else if (data.error != undefined) {
           els.message.addClass('text-warning bg-warning');

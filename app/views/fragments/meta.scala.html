@@ -8,7 +8,7 @@
   if(work.doNotImport) {c + " donotimport " + workType } else {c + workType }
 }
 
-<div class="row workdiv @cssClass" id="@work.ID">
+<div class="row workdiv @cssClass" id="story@work.ID">
   <div class="col-lg-6 col-md-7 col-sm-6 storytitle">
 
     @if(workType == "Story" && (work.url.isEmpty && chapters.nonEmpty)) {
