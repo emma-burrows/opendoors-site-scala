@@ -1,5 +1,13 @@
 @(chapterWithStory: ChapterWithStory, appName: String, config: ArchiveConfig)
 
-@main("ChapterController", "chapters", config) {
+@main(chapterWithStory.storyWithAuthors.story.title, "chapters", config) {
+
+  @if(chapterWithStory != null) {
+
+
+    <div class="chapter-content" style="white-space: pre-line">
+      @{chapterWithStory.chapter.text}
+    </div>
+  }
 
 }

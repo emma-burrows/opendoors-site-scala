@@ -7,7 +7,8 @@ val conf = ConfigFactory.parseFile(new File("conf/server.conf")).resolve()
 val sitename = conf.getString("application.name")
 
 
-lazy val opendoorsSite = (project in file(".")).enablePlugins(PlayScala)
+lazy val opendoorsSite = (project in file("."))
+  .enablePlugins(PlayScala)
   .settings(
     name := sitename,
     packageName in Universal := sitename,

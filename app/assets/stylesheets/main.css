@@ -16,3 +16,9 @@ article h2 {
   border: #b7cbff 1px solid;
   border-radius: 10px;
 }
+.do-not-import {
+  background: #f9c3d6;
+}
+.do-not-import .author-import-button {
+  visible: false;
+}

@@ -45,7 +45,7 @@ class AuthorsController @Inject() (env: play.api.Environment, config: play.api.C
       if (result.isRight) {
         result match {
           case Right(resp) => msdb.updateStoryStatuses(resp.asInstanceOf[FindWorkResponse], stories)
-          case Left(e) =>
+          case Left(e) => println("failed")
         }
       }
 

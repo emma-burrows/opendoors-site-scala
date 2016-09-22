@@ -47,7 +47,7 @@
     </nav>
     <div class="container">
       <hr />
-      <h1>Title</h1>
+      <h1>@title</h1>
       @if(config != null) {
       <div class="message-info">
         Send emails is <b>@config.sendemail</b>.
@@ -57,6 +57,7 @@
         Archive server is <b>@config.archivehost</b>
       </div>
       }
+      <hr/>
     @content
     </div>
   </body>
