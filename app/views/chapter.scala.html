@@ -1,9 +1,29 @@
 @(chapterWithStory: ChapterWithStory, appName: String, config: ArchiveConfig)
 
+@chapter = @{ chapterWithStory.chapter }
+@fields = @{ (Map[String, Any]() /: chapter.getClass.getDeclaredFields) { (a, f) =>
+    f.setAccessible(true)
+    a + (f.getName -> f.get(chapter))
+  }
+}
+
 @main(chapterWithStory.storyWithAuthors.story.title, "chapters", config) {
 
   @if(chapterWithStory != null) {
+    <h2>@chapterWithStory.chapter.title</h2>
 
+    <fieldset>
+      @fields.filterKeys(k => !List("url", "text").contains(k)).map { case (name, value) =>
+        <div class="form-group">
+          <label for="@name" style="width: 150px">@{name.capitalize}:</label> <span>@{
+          value match {
+            case Some(x) => x.toString
+            case x => x
+          }
+        }</span>
+        </div>
+      }
+    </fieldset>
 
     <div class="chapter-content" style="white-space: pre-line">
       @{chapterWithStory.chapter.text}
