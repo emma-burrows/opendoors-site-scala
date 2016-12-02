@@ -22,10 +22,10 @@ class MySqlDatabase @Inject() (dbConfigProvider: DatabaseConfigProvider) {
 
   // There should only be one row in the config table
   val archiveconfig: Future[ArchiveConfig] = db.run {
-    for (config <- Archiveconfig.result)
+    for (config <- ArchiveConfigs.result)
       yield {
         config.headOption match {
-          case Some(c) => (ArchiveConfig.apply _).tupled(Tables.ArchiveconfigRow.unapply(c).get)
+          case Some(c) => (ArchiveConfig.apply _).tupled(Tables.ArchiveConfigRow.unapply(c).get)
           case None    =>  ArchiveConfig()
         }
       }
