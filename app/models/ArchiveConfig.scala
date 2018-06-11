@@ -3,7 +3,7 @@ package models
 case class ArchiveConfig(
   id: Int = 0,
   key: String = "od",
-  name: Option[String] = Some("opendoors"),
+  name: Option[String] = Some("opendoors-scala"),
   fandom: Option[String] = None,
   odnote: Option[String] = None,
   archivehost: Option[String] = Some("ariana.ao3.org"),

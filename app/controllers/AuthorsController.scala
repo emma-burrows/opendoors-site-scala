@@ -1,25 +1,34 @@
 package controllers
 
 import java.nio.charset.Charset
-import javax.inject.Inject
 
+import javax.inject.Inject
 import models.db.Tables._
 import models.db.Tables.profile.api._
+import org.webjars.play.WebJarsUtil
 import otw.api.ArchiveClient
 import otw.api.request.{FindWorkRequest, OriginalRef}
 import otw.api.response.FindWorkResponse
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.InjectedController
 import services.Archive
 import utils.Json
 
 case class GenericResponse(status: Int, body: String)
 
-class AuthorsController @Inject() (env: play.api.Environment, config: play.api.Configuration, msdb: services.MySqlDatabase)
-  extends Controller {
+class AuthorsController @Inject() (env: play.api.Environment, config: play.api.Configuration, msdb: services.MySqlDatabase,
+                                   archiveClient: ArchiveClient)
+  extends InjectedController {
+  val webJarsUtil: WebJarsUtil = new WebJarsUtil(config, env)
 
-  val appName = config.getString("application.name").getOrElse("opendoors")
-  val archive = ArchiveClient(config.getString("archive.token").getOrElse(""), config.getString("archive.host").getOrElse(""))
+  private val appName = config.getOptional[String]("application.name").getOrElse("opendoors-scala")
+  private val archive = if (archiveClient == null) {
+    ArchiveClient(config.getOptional[String]("archive.token").getOrElse(""),
+                  config.getOptional[String]("archive.host").getOrElse(""))
+  }
+  else {
+    archiveClient
+  }
 
   def authorFuture(authorId: Long) = msdb.authorsWithItems().map { authors =>
     authors.filter(a => a.author.ID == authorId).head
@@ -32,7 +41,7 @@ class AuthorsController @Inject() (env: play.api.Environment, config: play.api.C
     }
     yield {
       authors.groupBy(_.stories)
-      Ok(views.html.authors(authors, appName, config))
+      Ok(views.html.authors(authors, appName, config, webJarsUtil))
     }
   }
 

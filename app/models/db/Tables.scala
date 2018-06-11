@@ -7,12 +7,12 @@ import org.joda.time.DateTime
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
-  val profile = slick.driver.MySQLDriver
+  val profile = slick.jdbc.MySQLProfile
 } with Tables
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
 trait Tables extends BookmarkTable with StoriesTable with ArchiveConfigTable {
-  val profile: slick.driver.JdbcProfile
+  val profile: slick.jdbc.JdbcProfile
 
   import profile.api._
   import slick.model.ForeignKeyAction
@@ -22,8 +22,8 @@ trait Tables extends BookmarkTable with StoriesTable with ArchiveConfigTable {
 
   /** DDL for all tables. Call .create to execute. */
   lazy val schema: profile.SchemaDescription = Array(ArchiveConfigs.schema, Authors.schema, Bookmarks.schema, Chapters.schema, PlayEvolutions.schema, Stories.schema).reduceLeft(_ ++ _)
-  @deprecated("Use .schema instead of .ddl", "3.0")
-  def ddl = schema
+//  @deprecated("Use .schema instead of .ddl", "3.0")
+//  def ddl = schema
 
 
 

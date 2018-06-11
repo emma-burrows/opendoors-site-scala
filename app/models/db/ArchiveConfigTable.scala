@@ -10,7 +10,7 @@ trait ArchiveConfigTable {
   /** Collection-like TableQuery object for table ArchiveConfig */
   lazy val ArchiveConfigs = new TableQuery(tag => new ArchiveConfigs(tag))
 
-  val profile: slick.driver.JdbcProfile
+  val profile: slick.jdbc.JdbcProfile
 
   import profile.api._
   import slick.model.ForeignKeyAction

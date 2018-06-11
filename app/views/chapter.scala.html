@@ -1,4 +1,4 @@
-@(chapterWithStory: ChapterWithStory, appName: String, config: ArchiveConfig)
+@(chapterWithStory: ChapterWithStory, appName: String, config: ArchiveConfig, webJarsUtil: org.webjars.play.WebJarsUtil)
 
 @chapter = @{ chapterWithStory.chapter }
 @fields = @{ (Map[String, Any]() /: chapter.getClass.getDeclaredFields) { (a, f) =>
@@ -7,7 +7,7 @@
   }
 }
 
-@main(chapterWithStory.storyWithAuthors.story.title, "chapters", config) {
+@main(chapterWithStory.storyWithAuthors.story.title, "chapters", config, webJarsUtil) {
 
   @if(chapterWithStory != null) {
     <h2>@chapterWithStory.chapter.title</h2>

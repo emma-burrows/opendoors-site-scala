@@ -10,7 +10,7 @@ trait BookmarkTable {
   /** Collection-like TableQuery object for table Bookmarks */
   lazy val Bookmarks = new TableQuery(tag => new Bookmarks(tag))
 
-  val profile: slick.driver.JdbcProfile
+  val profile: slick.jdbc.JdbcProfile
   import profile.api._
   import slick.model.ForeignKeyAction
   import slick.jdbc.{GetResult => GR}

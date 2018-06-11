@@ -10,7 +10,7 @@ trait StoriesTable {
   /** Collection-like TableQuery object for table Stories */
   lazy val Stories = new TableQuery(tag => new Stories(tag))
 
-  val profile: slick.driver.JdbcProfile
+  val profile: slick.jdbc.JdbcProfile
   import profile.api._
   import slick.model.ForeignKeyAction
   import slick.jdbc.{GetResult => GR}

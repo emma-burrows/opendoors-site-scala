@@ -21,3 +21,14 @@ dist
 /public/css
 /public/js
 /activator-sbt-atmos-akka-shim.sbt
+.DS_Store
+ansible/.gitignore
+ansible/ansible.cfg
+ansible/dist-play-app-initd
+ansible/hosts
+ansible/opendoors-web.yml
+ansible/server.conf
+ansible/setup-opendoors-web.yml
+ansible/variables.yml
+lib/
+project/.DS_Store

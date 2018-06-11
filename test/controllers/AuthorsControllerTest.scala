@@ -5,31 +5,30 @@ import java.util.Date
 import com.typesafe.config.Config
 import models._
 import org.joda.time.DateTime
-import org.scalatest.Matchers
-import org.scalatest.mock.MockitoSugar
 import org.mockito.ArgumentMatchers.{any => anyArg}
 import org.mockito.BDDMockito.given
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import otw.api.response.{WorkFoundResponse, FindWorkResponse}
-import play.api.libs.json.Json
+import org.scalatest.Matchers
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import org.scalatestplus.play.PlaySpec
+import otw.api.ArchiveClient
+import otw.api.response.{FindWorkResponse, WorkFoundResponse}
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Environment, Configuration}
+import play.api.{Configuration, Environment}
 import services.MySqlDatabase
 
-import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.language.postfixOps
-
-
 import scala.util.Random
 
-class AuthorsControllerTest extends PlaySpec with Matchers with MockitoSugar with Results with OneAppPerSuite {
+class AuthorsControllerTest extends PlaySpec with Matchers with MockitoSugar with Results with GuiceOneAppPerSuite {
 
   val mockDataService = mock[MySqlDatabase]
   val mockConfig = mock[Config]
-  val mockArchive = mock[utils.Archive]
+  val mockArchive = mock[ArchiveClient]
   val env: Environment = Environment.simple()
   val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
   val authorController = new AuthorsController(env, Configuration(mockConfig), mockDataService, mockArchive)
@@ -96,9 +95,8 @@ class AuthorsControllerTest extends PlaySpec with Matchers with MockitoSugar wit
       Author(x, s"author$x", s"author$x@example.com") // .copy( stories = Some(stories(x)))
     }
     val ratings = List("Not Rated", "General Audiences", "Teen And Up Audiences", "Mature", "Explicit")
-    val urls = List("", "foo", "http://astele.co.uk/od-test/api-test-1.htm",
-                    "http://vmguest/WolfAndHound/Chapter/Details/861", "http://astele.co" +
-                      ".uk/henneth/Chapter/Details/6318")
+    val urls = List("", "foo", "http://od-test/api-test-1.htm",
+                    "http://vmguest/WolfAndHound/Chapter/Details/861", "http://henneth/Chapter/Details/6318")
 
     def stories(authorId: Int) = List.tabulate((new Random).nextInt(10)) { x =>
       StoryWithChapters(
