@@ -17,8 +17,10 @@ import utils.Json
 case class GenericResponse(status: Int, body: String)
 
 class AuthorsController @Inject() (env: play.api.Environment, config: play.api.Configuration, msdb: services.MySqlDatabase,
-                                   archiveClient: ArchiveClient)
+                                   archive_token: String, archive_api_url: String)
   extends InjectedController {
+
+  var archiveClient: ArchiveClient = ArchiveClient(archive_token, archive_api_url)
   val webJarsUtil: WebJarsUtil = new WebJarsUtil(config, env)
 
   private val appName = config.getOptional[String]("application.name").getOrElse("opendoors-scala")

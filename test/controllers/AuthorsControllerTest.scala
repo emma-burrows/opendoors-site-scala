@@ -31,7 +31,8 @@ class AuthorsControllerTest extends PlaySpec with Matchers with MockitoSugar wit
   val mockArchive = mock[ArchiveClient]
   val env: Environment = Environment.simple()
   val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
-  val authorController = new AuthorsController(env, Configuration(mockConfig), mockDataService, mockArchive)
+  val authorController = new AuthorsController(env, Configuration(mockConfig), mockDataService, "", "")
+  authorController.archiveClient = mockArchive
 
 
   "AuthorsController" should {
